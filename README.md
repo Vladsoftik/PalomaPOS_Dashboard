@@ -11,6 +11,21 @@ This project uses a two-folder documentation structure:
 - **`docs_unified/`** - Universal documentation patterns reusable across all React + Vite + TypeScript projects
 - **`docs_project/`** - Project-specific documentation describing this project's logic, architecture, and implementation
 
+### Unified Documentation API
+
+The unified documentation is available via API for use in other projects with Cursor AI:
+
+- **API Base URL**: `https://your-domain.com/api/docs`
+- **API Key**: See `API_KEY.txt` or `DOCS_INTEGRATION_GUIDE.md`
+- **Integration Guide**: See [DOCS_INTEGRATION_GUIDE.md](DOCS_INTEGRATION_GUIDE.md) for complete setup instructions
+
+**API Endpoints**:
+- `GET /api/docs/:filename?key=API_KEY` - Get specific documentation file
+- `GET /api/docs?key=API_KEY` - List all available documentation files
+- `GET /api/docs/all?key=API_KEY` - Get all documentation (bulk)
+
+This allows other projects to reference and follow the same unified development patterns using Cursor AI.
+
 ### Unified Documentation (`docs_unified/`)
 
 Universal patterns and guidelines that can be reused in any React + Vite + TypeScript project:
@@ -144,4 +159,29 @@ When adding new features or making changes:
 3. **Verify consistency** - Ensure code matches documentation
 
 For detailed workflow instructions, see [Cursor Best Practices](docs_unified/CURSOR_BEST_PRACTICES.md).
+
+## Unified Documentation Maintenance
+
+### ⚠️ MANDATORY Rule: API Key Regeneration
+
+**When modifying any file in `docs_unified/`:**
+
+1. **Regenerate API Key** - Generate a new static API key:
+   ```bash
+   node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+   ```
+
+2. **Update Vercel Environment Variable** - Set the new key in Vercel as `DOCS_API_KEY`
+
+3. **Update Documentation** - Update `API_KEY.txt` and `DOCS_INTEGRATION_GUIDE.md` with the new key
+
+4. **Notify All Projects** - Share the new API key with all projects using the unified documentation
+
+5. **Update `.cursorrules`** - Update this project's `.cursorrules` if it references the API key
+
+**Why This Rule Exists:**
+- Ensures all projects use the latest documentation version
+- Prevents access to outdated patterns
+- Maintains consistency across all projects
+- Forces explicit acknowledgment of documentation changes
 

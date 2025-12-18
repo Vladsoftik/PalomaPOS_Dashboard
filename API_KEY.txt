@@ -1,0 +1,33 @@
+Generated Static API Key for Documentation Access
+==================================================
+
+API Key: a02cb62a06c3df3dc7635bbdc2e79d5e9c325bfdbe0f24a6616bcd8ee8c6ede2
+
+IMPORTANT: 
+- Store this key securely
+- Add to Vercel environment variables as DOCS_API_KEY
+- Share with other projects that need to access documentation
+- This key provides read-only access to documentation files
+
+⚠️ MANDATORY RULE: API Key Regeneration
+========================================
+When ANY file in docs_unified/ is modified:
+1. Generate a new API key: node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+2. Update Vercel environment variable DOCS_API_KEY
+3. Update this file (API_KEY.txt) with the new key
+4. Update DOCS_INTEGRATION_GUIDE.md with the new key
+5. Notify all projects using the documentation to update their API key
+
+This ensures all projects use the latest documentation version.
+
+Usage:
+- Query parameter: ?key=YOUR_API_KEY
+- Header: X-API-Key: YOUR_API_KEY
+
+API Endpoints:
+- GET /api/docs/:filename?key=YOUR_API_KEY - Get specific documentation file
+- GET /api/docs?key=YOUR_API_KEY - List all documentation files
+- GET /api/docs/all?key=YOUR_API_KEY - Get all documentation (bulk)
+
+For integration instructions, see: DOCS_INTEGRATION_GUIDE.md
+

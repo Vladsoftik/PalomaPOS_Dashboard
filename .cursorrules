@@ -21,3 +21,28 @@
    - Use README.md as the authoritative source for project information
    - Do not recreate or summarize README.md content - reference it directly
 
+## Unified Documentation Maintenance Rules
+
+### ⚠️ MANDATORY: API Key Regeneration Rule
+
+**When modifying ANY file in `docs_unified/` directory:**
+
+1. **MUST Regenerate API Key** - Generate a new static API key using:
+   ```bash
+   node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+   ```
+
+2. **MUST Update Vercel Environment Variable** - Set the new key in Vercel as `DOCS_API_KEY`
+
+3. **MUST Update Documentation Files**:
+   - Update `API_KEY.txt` with the new key
+   - Update `DOCS_INTEGRATION_GUIDE.md` with the new key
+   - Update this `.cursorrules` file if it contains the API key
+
+4. **MUST Notify All Projects** - Share the new API key with all projects using the unified documentation
+
+5. **MUST Update README.md** - Update the API key reference in README.md if present
+
+**This rule is MANDATORY and cannot be skipped.**
+**Purpose**: Ensures all projects use the latest documentation version and prevents access to outdated patterns.
+
