@@ -2,6 +2,9 @@ import type { VercelRequest, VercelResponse } from '@vercel/node'
 import fs from 'fs'
 import path from 'path'
 
+// Static API key for documentation access
+const DOCS_API_KEY = 'a02cb62a06c3df3dc7635bbdc2e79d5e9c325bfdbe0f24a6616bcd8ee8c6ede2'
+
 interface DocumentationFile {
   name: string
   title: string
@@ -82,16 +85,8 @@ export default async function handler(
 
   // Verify API key
   const apiKey = (req.query.key as string) || req.headers['x-api-key']
-  const expectedKey = process.env.DOCS_API_KEY
 
-  if (!expectedKey) {
-    return res.status(500).json({
-      success: false,
-      error: 'API key not configured',
-    })
-  }
-
-  if (!apiKey || apiKey !== expectedKey) {
+  if (!apiKey || apiKey !== DOCS_API_KEY) {
     return res.status(401).json({
       success: false,
       error: 'Unauthorized - Invalid API key',

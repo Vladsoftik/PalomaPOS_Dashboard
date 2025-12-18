@@ -32,7 +32,10 @@
    node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
    ```
 
-2. **MUST Update Vercel Environment Variable** - Set the new key in Vercel as `DOCS_API_KEY`
+2. **MUST Update API Endpoint Files** - Update the hardcoded API key constant in all three API files:
+   - `api/docs/[filename].ts`
+   - `api/docs/index.ts`
+   - `api/docs/all.ts`
 
 3. **MUST Update Documentation Files**:
    - Update `API_KEY.txt` with the new key

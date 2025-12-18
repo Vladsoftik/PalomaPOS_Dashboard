@@ -228,8 +228,8 @@ If you find improvements to patterns:
 
 **Solution**: 
 - Verify API key is correct
-- Check that key is set in Vercel environment variables
-- Ensure key is included in API requests
+- Ensure key is included in API requests (query parameter or header)
+- Check that the API key matches the hardcoded key in the API endpoint files
 
 ### File Not Found
 

@@ -171,7 +171,11 @@ For detailed workflow instructions, see [Cursor Best Practices](docs_unified/CUR
    node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
    ```
 
-2. **Update Vercel Environment Variable** - Set the new key in Vercel as `DOCS_API_KEY`
+2. **Update API Endpoint Files** - Update the hardcoded API key in all three API endpoint files:
+   - `api/docs/[filename].ts`
+   - `api/docs/index.ts`
+   - `api/docs/all.ts`
+   (Change the `DOCS_API_KEY` constant in each file)
 
 3. **Update Documentation** - Update `API_KEY.txt` and `DOCS_INTEGRATION_GUIDE.md` with the new key
 
