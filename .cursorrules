@@ -1,0 +1,23 @@
+# Cursor AI Rules for PalomaPOS Dashboard
+
+## README.md Rules
+
+### Rules for README.md
+
+1. **Always Read README.md First**
+   - README.md is the primary source of project information
+   - Always read README.md when starting work on this project
+   - Use README.md to understand:
+     - Project structure and organization
+     - Tech stack and dependencies
+     - Quick start instructions
+     - Key features and capabilities
+     - Documentation structure and links
+     - Development guidelines
+
+2. **Reference README.md for Information**
+   - When users ask about project details, reference README.md
+   - Quote or reference specific sections from README.md
+   - Use README.md as the authoritative source for project information
+   - Do not recreate or summarize README.md content - reference it directly
+
