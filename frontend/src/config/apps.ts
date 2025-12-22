@@ -1,4 +1,5 @@
 import { App } from '../types/app'
+import { dashboardSubRoutes } from './dashboardRoutes'
 
 export const apps: App[] = [
   {
@@ -6,6 +7,7 @@ export const apps: App[] = [
     label: 'Dashboard',
     url: 'https://dashboard.apps.palomapos.com/',
     icon: '📊',
+    subItems: dashboardSubRoutes,
   },
   {
     id: 'timeclock',
