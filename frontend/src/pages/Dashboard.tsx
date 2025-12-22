@@ -1,16 +1,16 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { Maximize2, Minimize2 } from 'lucide-react'
 import Sidebar from '../components/layout/Sidebar'
 import IframeContainer from '../components/common/IframeContainer'
 import { apps, getDefaultApp, getAppById } from '../config/apps'
 import { getSubRouteByPath, getSubRouteById } from '../config/dashboardRoutes'
-import { useAuth } from '../contexts/AuthContext'
 import { AppSubItem } from '../types/app'
 
 export default function Dashboard() {
-  const { logout, isCredentialLogin } = useAuth()
   const location = useLocation()
   const navigate = useNavigate()
+  const [isMaximized, setIsMaximized] = useState(false)
   
   const [activeAppId, setActiveAppId] = useState(() => {
     return getDefaultApp().id
@@ -69,26 +69,38 @@ export default function Dashboard() {
     return app.url
   }, [activeAppId, activeSubItem])
 
+  const toggleMaximize = () => {
+    setIsMaximized(!isMaximized)
+  }
+
   return (
     <div className="flex h-screen bg-gray-50 dark:bg-dark-bg overflow-hidden">
-      <Sidebar
-        apps={apps}
-        activeAppId={activeAppId}
-        activeSubItemId={activeSubItem?.id}
-        onAppSelect={handleAppSelect}
-        onSubItemSelect={handleSubItemSelect}
-      />
-      <main className="flex-1 overflow-hidden relative">
-        {isCredentialLogin && (
-          <div className="absolute bottom-4 left-4 z-10">
-            <button
-              onClick={logout}
-              className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-md transition-colors shadow-lg"
-            >
-              Logout
-            </button>
-          </div>
-        )}
+      {!isMaximized && (
+        <Sidebar
+          apps={apps}
+          activeAppId={activeAppId}
+          activeSubItemId={activeSubItem?.id}
+          onAppSelect={handleAppSelect}
+          onSubItemSelect={handleSubItemSelect}
+        />
+      )}
+      <main className={`${isMaximized ? 'w-full' : 'flex-1'} overflow-hidden relative`}>
+        {/* Maximize/Minimize Button */}
+        <div className="absolute bottom-4 right-4 z-20 flex gap-2">
+          <button
+            onClick={toggleMaximize}
+            className="p-2 bg-white dark:bg-dark-bg-secondary rounded-lg shadow-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors"
+            title={isMaximized ? 'Minimize' : 'Maximize'}
+            aria-label={isMaximized ? 'Minimize' : 'Maximize'}
+          >
+            {isMaximized ? (
+              <Minimize2 className="w-5 h-5" />
+            ) : (
+              <Maximize2 className="w-5 h-5" />
+            )}
+          </button>
+        </div>
+        
         <IframeContainer url={currentUrl} />
       </main>
     </div>
