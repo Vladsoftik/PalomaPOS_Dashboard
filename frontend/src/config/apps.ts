@@ -21,6 +21,30 @@ export const apps: App[] = [
     url: 'https://order.out.apps.palomapos.com/',
     icon: '🍔',
   },
+  {
+    id: 'ai-manager',
+    label: 'AI Manager',
+    url: 'https://ai-manager.apps.palomapos.com',
+    icon: '🤖',
+  },
+  {
+    id: 'loyalty',
+    label: 'Loyalty System',
+    url: 'https://loyalty.apps.palomapos.com',
+    icon: '🎁',
+  },
+  {
+    id: 'online-order',
+    label: 'Online Order',
+    url: 'https://website.builder.apps.palomapos.com',
+    icon: '🌐',
+  },
+  {
+    id: 'instant-funding',
+    label: 'Instant Funding',
+    url: 'https://neteva-register.apps.palomapos.com',
+    icon: '⚡',
+  },
 ]
 
 export const getAppById = (id: string): App | undefined => {

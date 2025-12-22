@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { LayoutDashboard, Clock, ShoppingBag, ChevronDown, ChevronRight } from 'lucide-react'
+import { LayoutDashboard, Clock, ShoppingBag, Brain, Gift, Globe, Zap, ChevronDown, ChevronRight } from 'lucide-react'
 import { App, AppSubItem } from '../../types/app'
 
 // Map app IDs to Lucide React icons
@@ -7,6 +7,10 @@ const appIcons: Record<string, React.ComponentType<{ className?: string }>> = {
   dashboard: LayoutDashboard,
   timeclock: Clock,
   orders: ShoppingBag,
+  'ai-manager': Brain,
+  loyalty: Gift,
+  'online-order': Globe,
+  'instant-funding': Zap,
 }
 
 interface SidebarProps {
