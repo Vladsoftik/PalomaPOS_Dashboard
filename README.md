@@ -72,8 +72,14 @@ Project-specific documentation for PalomaPOS Dashboard:
 # Install dependencies
 npm install
 
-# Start development server
+# Start development server (frontend only - API routes won't work)
 npm run dev
+
+# Start development server with API routes (requires Vercel CLI)
+# First install: npm install -g vercel
+npm run dev:api
+# or
+npm run dev:full
 
 # Build for production
 npm run build
@@ -81,6 +87,11 @@ npm run build
 # Preview production build
 npm run preview
 ```
+
+**Important:** 
+- `npm run dev` - Frontend only, API routes will return an error message
+- `npm run dev:api` - Full development with API routes (requires `vercel dev`)
+- For local API testing, use `vercel dev` which properly handles serverless functions
 
 ## Key Features
 
