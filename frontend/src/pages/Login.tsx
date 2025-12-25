@@ -11,7 +11,7 @@ export default function Login() {
 
   useEffect(() => {
     if (isAuthenticated && !isTokenInheriting) {
-      navigate('/dashboard', { replace: true });
+      navigate('/', { replace: true });
     }
   }, [isAuthenticated, isTokenInheriting, navigate]);
 
@@ -23,7 +23,7 @@ export default function Login() {
     setIsLoading(false);
     
     if (success) {
-      navigate('/dashboard');
+      navigate('/');
     }
   };
 
