@@ -187,6 +187,7 @@ For detailed workflow instructions, see [Cursor Best Practices](docs_unified/CUR
    - `api/docs/index.ts`
    - `api/docs/all.ts`
    (Change the `DOCS_API_KEY` constant in each file)
+   
 
 3. **Update Documentation** - Update `API_KEY.txt` and `DOCS_INTEGRATION_GUIDE.md` with the new key
 
