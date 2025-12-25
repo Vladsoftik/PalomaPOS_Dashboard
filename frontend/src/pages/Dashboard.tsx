@@ -4,70 +4,59 @@ import { Maximize2, Minimize2 } from 'lucide-react'
 import Sidebar from '../components/layout/Sidebar'
 import IframeContainer from '../components/common/IframeContainer'
 import { apps, getDefaultApp, getAppById } from '../config/apps'
-import { getSubRouteByPath, getSubRouteById } from '../config/dashboardRoutes'
-import { AppSubItem } from '../types/app'
+// #region agent log
+fetch('http://127.0.0.1:7246/ingest/a3325ac2-7580-443c-83c2-0dde3f92a152',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'Dashboard.tsx:7',message:'Import attempt - dashboardRoutes',data:{file:'../config/dashboardRoutes'},timestamp:Date.now(),sessionId:'debug-session',runId:'pre-fix',hypothesisId:'A'})}).catch(()=>{});
+// #endregion
+// REMOVED: import { getSubRouteByPath, getSubRouteById } from '../config/dashboardRoutes'
+// REMOVED: import { AppSubItem } from '../types/app'
 
 export default function Dashboard() {
+  // #region agent log
+  fetch('http://127.0.0.1:7246/ingest/a3325ac2-7580-443c-83c2-0dde3f92a152',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'Dashboard.tsx:10',message:'Dashboard component entry',data:{pathname:window.location.pathname},timestamp:Date.now(),sessionId:'debug-session',runId:'pre-fix',hypothesisId:'B'})}).catch(()=>{});
+  // #endregion
   const location = useLocation()
   const navigate = useNavigate()
   const [isMaximized, setIsMaximized] = useState(false)
   
   const [activeAppId, setActiveAppId] = useState(() => {
+    // #region agent log
+    fetch('http://127.0.0.1:7246/ingest/a3325ac2-7580-443c-83c2-0dde3f92a152',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'Dashboard.tsx:16',message:'Setting activeAppId',data:{defaultAppId:getDefaultApp().id},timestamp:Date.now(),sessionId:'debug-session',runId:'pre-fix',hypothesisId:'C'})}).catch(()=>{});
+    // #endregion
     return getDefaultApp().id
   })
   
-  const [activeSubItem, setActiveSubItem] = useState<AppSubItem | null>(() => {
-    // Check if current path matches a dashboard sub-route
-    const subRoute = getSubRouteByPath(location.pathname)
-    if (subRoute) {
-      return subRoute
-    }
-    // Default to main dashboard
-    const defaultSubRoute = getSubRouteById('dashboard-main')
-    return defaultSubRoute || null
-  })
+  // REMOVED: Subroute logic - no longer needed
+  // const [activeSubItem, setActiveSubItem] = useState<AppSubItem | null>(null)
 
-  useEffect(() => {
-    // Sync with URL changes
-    const subRoute = getSubRouteByPath(location.pathname)
-    if (subRoute && activeAppId === 'dashboard') {
-      setActiveSubItem(subRoute)
-    } else if (location.pathname === '/dashboard' || location.pathname === '/') {
-      const defaultSubRoute = getSubRouteById('dashboard-main')
-      setActiveSubItem(defaultSubRoute || null)
-    }
-  }, [location.pathname, activeAppId])
+  // REMOVED: Subroute sync effect - no longer needed
+  // useEffect(() => {
+  //   // Sync with URL changes
+  // }, [location.pathname, activeAppId])
 
   const handleAppSelect = (appId: string) => {
+    // #region agent log
+    fetch('http://127.0.0.1:7246/ingest/a3325ac2-7580-443c-83c2-0dde3f92a152',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'Dashboard.tsx:41',message:'handleAppSelect called',data:{appId},timestamp:Date.now(),sessionId:'debug-session',runId:'pre-fix',hypothesisId:'D'})}).catch(()=>{});
+    // #endregion
     setActiveAppId(appId)
     if (appId === 'dashboard') {
-      // Select the first sub-item (main dashboard)
-      const defaultSubRoute = getSubRouteById('dashboard-main')
-      if (defaultSubRoute) {
-        setActiveSubItem(defaultSubRoute)
-        navigate(defaultSubRoute.path)
-      } else {
-        navigate('/dashboard')
-      }
-    } else {
-      setActiveSubItem(null)
+      navigate('/dashboard')
     }
   }
 
-  const handleSubItemSelect = (appId: string, subItem: AppSubItem) => {
-    setActiveAppId(appId)
-    setActiveSubItem(subItem)
-    navigate(subItem.path)
-  }
+  // REMOVED: handleSubItemSelect - no longer needed
+  // const handleSubItemSelect = (appId: string, subItem: AppSubItem) => { ... }
 
   // Memoize URL calculation to prevent unnecessary recalculations
   const currentUrl = useMemo(() => {
-    if (activeAppId === 'dashboard' && activeSubItem) {
-      return activeSubItem.url
-    }
+    // #region agent log
+    fetch('http://127.0.0.1:7246/ingest/a3325ac2-7580-443c-83c2-0dde3f92a152',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'Dashboard.tsx:64',message:'Calculating currentUrl',data:{activeAppId},timestamp:Date.now(),sessionId:'debug-session',runId:'pre-fix',hypothesisId:'E'})}).catch(()=>{});
+    // #endregion
     const app = getAppById(activeAppId) || getDefaultApp()
+    // #region agent log
+    fetch('http://127.0.0.1:7246/ingest/a3325ac2-7580-443c-83c2-0dde3f92a152',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'Dashboard.tsx:68',message:'currentUrl calculated',data:{url:app.url},timestamp:Date.now(),sessionId:'debug-session',runId:'pre-fix',hypothesisId:'E'})}).catch(()=>{});
+    // #endregion
     return app.url
-  }, [activeAppId, activeSubItem])
+  }, [activeAppId])
 
   const toggleMaximize = () => {
     setIsMaximized(!isMaximized)
@@ -79,9 +68,7 @@ export default function Dashboard() {
         <Sidebar
           apps={apps}
           activeAppId={activeAppId}
-          activeSubItemId={activeSubItem?.id}
           onAppSelect={handleAppSelect}
-          onSubItemSelect={handleSubItemSelect}
         />
       )}
       <main className={`${isMaximized ? 'w-full' : 'flex-1'} overflow-hidden relative`}>

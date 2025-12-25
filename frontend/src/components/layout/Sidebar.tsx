@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import { LayoutDashboard, Clock, ShoppingBag, Brain, Gift, Globe, Zap, ChevronDown, ChevronRight } from 'lucide-react'
-import { App, AppSubItem } from '../../types/app'
+import { LayoutDashboard, Clock, ShoppingBag, Brain, Gift, Globe, Zap } from 'lucide-react'
+import { App } from '../../types/app'
 
 // Map app IDs to Lucide React icons
 const appIcons: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -16,72 +16,23 @@ const appIcons: Record<string, React.ComponentType<{ className?: string }>> = {
 interface SidebarProps {
   apps: App[]
   activeAppId: string
-  activeSubItemId?: string
   onAppSelect: (appId: string) => void
-  onSubItemSelect?: (appId: string, subItem: AppSubItem) => void
 }
 
 const SIDEBAR_STORAGE_KEY = 'sidebar-collapsed'
 
-export default function Sidebar({ apps, activeAppId, activeSubItemId, onAppSelect, onSubItemSelect }: SidebarProps) {
+export default function Sidebar({ apps, activeAppId, onAppSelect }: SidebarProps) {
   const [isCollapsed, setIsCollapsed] = useState(() => {
     const saved = localStorage.getItem(SIDEBAR_STORAGE_KEY)
     return saved ? JSON.parse(saved) : false
-  })
-
-  const [expandedApps, setExpandedApps] = useState<Set<string>>(() => {
-    // Auto-expand dashboard if it's active
-    if (activeAppId === 'dashboard') {
-      return new Set(['dashboard'])
-    }
-    return new Set()
   })
 
   useEffect(() => {
     localStorage.setItem(SIDEBAR_STORAGE_KEY, JSON.stringify(isCollapsed))
   }, [isCollapsed])
 
-  useEffect(() => {
-    // Auto-expand Dashboard when it becomes active
-    if (activeAppId === 'dashboard') {
-      setExpandedApps((prev) => {
-        const newSet = new Set(prev)
-        newSet.add('dashboard')
-        return newSet
-      })
-    }
-  }, [activeAppId])
-
-  const toggleCollapse = () => {
-    setIsCollapsed(!isCollapsed)
-  }
-
-  const toggleExpand = (appId: string) => {
-    setExpandedApps((prev) => {
-      const newSet = new Set(prev)
-      if (newSet.has(appId)) {
-        newSet.delete(appId)
-      } else {
-        newSet.add(appId)
-      }
-      return newSet
-    })
-  }
-
   const handleAppClick = (app: App) => {
-    if (app.subItems && app.subItems.length > 0) {
-      if (!isCollapsed) {
-        toggleExpand(app.id)
-      }
-      // If clicking on dashboard with sub-items, select the first sub-item
-      if (app.id === 'dashboard' && onSubItemSelect && app.subItems.length > 0) {
-        onSubItemSelect(app.id, app.subItems[0])
-      } else {
-        onAppSelect(app.id)
-      }
-    } else {
-      onAppSelect(app.id)
-    }
+    onAppSelect(app.id)
   }
 
   const sidebarWidth = isCollapsed ? '64px' : '256px'
@@ -136,8 +87,6 @@ export default function Sidebar({ apps, activeAppId, activeSubItemId, onAppSelec
       <nav className="flex-1 p-2 pt-4 space-y-1 overflow-y-auto">
         {apps.map((app) => {
           const isActive = app.id === activeAppId
-          const isExpanded = expandedApps.has(app.id)
-          const hasSubItems = app.subItems && app.subItems.length > 0
           const IconComponent = appIcons[app.id]
           
           return (
@@ -155,53 +104,9 @@ export default function Sidebar({ apps, activeAppId, activeSubItemId, onAppSelec
                   <IconComponent className="w-5 h-5 flex-shrink-0" />
                 )}
                 {!isCollapsed && (
-                  <>
-                    <span className="text-sm font-medium truncate text-left flex-1">{app.label}</span>
-                    {false && hasSubItems && (
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          toggleExpand(app.id)
-                        }}
-                        className="p-0.5 hover:bg-gray-200 dark:hover:bg-gray-600 rounded"
-                      >
-                        {isExpanded ? (
-                          <ChevronDown className="w-4 h-4" />
-                        ) : (
-                          <ChevronRight className="w-4 h-4" />
-                        )}
-                      </button>
-                    )}
-                  </>
+                  <span className="text-sm font-medium truncate text-left flex-1">{app.label}</span>
                 )}
               </button>
-              
-              {/* Sub-items - Hidden for now */}
-              {false && !isCollapsed && hasSubItems && isExpanded && (
-                <div className="ml-4 mt-1 space-y-1">
-                  {app.subItems?.map((subItem) => {
-                    const isSubActive = activeSubItemId === subItem.id
-                    return (
-                      <button
-                        key={subItem.id}
-                        onClick={() => {
-                          if (onSubItemSelect) {
-                            onSubItemSelect(app.id, subItem)
-                          }
-                        }}
-                        className={`w-full flex items-center justify-start gap-3 px-3 py-2 rounded-lg transition-colors text-sm ${
-                          isSubActive
-                            ? 'bg-primary-500 text-white'
-                            : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
-                        }`}
-                      >
-                        <span className="w-2 h-2 rounded-full bg-current opacity-50"></span>
-                        <span className="text-sm font-medium truncate text-left">{subItem.label}</span>
-                      </button>
-                    )
-                  })}
-                </div>
-              )}
             </div>
           )
         })}

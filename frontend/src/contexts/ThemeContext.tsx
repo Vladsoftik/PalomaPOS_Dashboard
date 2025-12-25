@@ -42,9 +42,10 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [theme, setThemeState] = useState<Theme>(() => {
-    if (typeof window === 'undefined') return 'dark';
+    if (typeof window === 'undefined') return 'system';
     const stored = localStorage.getItem('theme') as Theme | null;
-    return stored || 'dark';
+    // Default to system (device theme) instead of dark
+    return stored || 'system';
   });
 
   const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>(() =>

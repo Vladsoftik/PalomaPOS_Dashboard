@@ -1,5 +1,7 @@
 import { useRef, useEffect, useState } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
+import { useTheme } from '../../contexts/ThemeContext'
+import { useLanguage } from '../../contexts/LanguageContext'
 import { getApiUrl } from '../../services/apiConfigService'
 
 interface IframeContainerProps {
@@ -33,6 +35,8 @@ export default function IframeContainer({ url, className = '' }: IframeContainer
   // Track the src value separately - only update when we want to reload
   const [iframeSrc, setIframeSrc] = useState<string>(url)
   const { token, accid, apid, employeeid, wpid, sessionData } = useAuth()
+  const { theme, resolvedTheme } = useTheme()
+  const { language } = useLanguage()
 
   // #region agent log
   useEffect(() => {
@@ -102,31 +106,67 @@ export default function IframeContainer({ url, className = '' }: IframeContainer
 
   const handleLoad = () => {
     // #region agent log
-    fetch('http://127.0.0.1:7246/ingest/a3325ac2-7580-443c-83c2-0dde3f92a152',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'IframeContainer.tsx:103',message:'Iframe onLoad event fired',data:{iframeSrc,currentSrc:iframeRef.current?.src},timestamp:Date.now(),sessionId:'debug-session',runId:'prevent-reload-fix',hypothesisId:'iframe-reload'})}).catch(()=>{});
+    fetch('http://127.0.0.1:7246/ingest/a3325ac2-7580-443c-83c2-0dde3f92a152',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'IframeContainer.tsx:103',message:'Iframe onLoad event fired',data:{iframeSrc,currentSrc:iframeRef.current?.src,hasToken:!!token,theme,resolvedTheme,language},timestamp:Date.now(),sessionId:'debug-session',runId:'auth-message-handler',hypothesisId:'iframe-reload'})}).catch(()=>{});
     // #endregion
-    // Send authentication token to iframe when it loads
+    // Send authentication token and all data to iframe when it loads
     if (iframeRef.current && token) {
       const iframe = iframeRef.current
       const iframeWindow = iframe.contentWindow
       
       if (iframeWindow) {
-        // Send token and other auth data to the iframe
+        // Get all sessionStorage values with the same keys
+        const sessionDataToSend = {
+          token: sessionStorage.getItem('paloma_token'),
+          accid: sessionStorage.getItem('paloma_accid'),
+          apid: sessionStorage.getItem('paloma_apid'),
+          employeeid: sessionStorage.getItem('paloma_employeeid'),
+          wpid: sessionStorage.getItem('paloma_wpid'),
+          idautomated_point: sessionStorage.getItem('paloma_idautomated_point'),
+          idworkplace: sessionStorage.getItem('paloma_idworkplace'),
+          customUrl: sessionStorage.getItem('paloma_customUrl') || getApiUrl(),
+        }
+        
+        // Send token, auth data, theme, and language to the iframe
+        // #region agent log
+        fetch('http://127.0.0.1:7246/ingest/a3325ac2-7580-443c-83c2-0dde3f92a152',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'IframeContainer.tsx:120',message:'Sending authentication data to iframe',data:{hasToken:!!sessionDataToSend.token,theme,resolvedTheme,language,hasCustomUrl:!!sessionDataToSend.customUrl},timestamp:Date.now(),sessionId:'debug-session',runId:'auth-message-handler',hypothesisId:'post-message-send'})}).catch(()=>{});
+        // #endregion
+        
         iframeWindow.postMessage(
           {
             type: 'authentication',
-            token,
-            accid,
-            apid,
-            employeeid,
-            wpid,
+            ...sessionDataToSend,
             sessionData,
-            customUrl: getApiUrl(),
+            theme: resolvedTheme, // Send resolved theme (light/dark) to child app
+            language: language, // Send current language to child app
           },
           '*', // In production, you should specify the target origin
         )
       }
     }
   }
+  
+  // Also send theme and language updates when they change
+  useEffect(() => {
+    if (iframeRef.current && token) {
+      const iframe = iframeRef.current
+      const iframeWindow = iframe.contentWindow
+      
+      if (iframeWindow) {
+        // #region agent log
+        fetch('http://127.0.0.1:7246/ingest/a3325ac2-7580-443c-83c2-0dde3f92a152',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'IframeContainer.tsx:140',message:'Theme or language changed, sending update',data:{theme,resolvedTheme,language},timestamp:Date.now(),sessionId:'debug-session',runId:'auth-message-handler',hypothesisId:'theme-language-update'})}).catch(()=>{});
+        // #endregion
+        
+        iframeWindow.postMessage(
+          {
+            type: 'theme-language-update',
+            theme: resolvedTheme,
+            language: language,
+          },
+          '*',
+        )
+      }
+    }
+  }, [theme, resolvedTheme, language, token])
 
   return (
     <div className={`relative w-full h-full ${className}`}>

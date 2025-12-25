@@ -151,22 +151,50 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     }
 
     const handler = async (event: MessageEvent) => {
-      const { type, token, customUrl, theme, language } = event.data || {};
+      // #region agent log
+      fetch('http://127.0.0.1:7246/ingest/a3325ac2-7580-443c-83c2-0dde3f92a152',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'AuthContext.tsx:153',message:'Message handler received',data:{type:event.data?.type,hasToken:!!event.data?.token},timestamp:Date.now(),sessionId:'debug-session',runId:'auth-message-handler',hypothesisId:'message-received'})}).catch(()=>{});
+      // #endregion
+      const { type, token, customUrl, theme, language, accid, apid, employeeid, wpid } = event.data || {};
       console.log('event.data', event.data);
       if (type === 'authentication' && token) {
+        // #region agent log
+        fetch('http://127.0.0.1:7246/ingest/a3325ac2-7580-443c-83c2-0dde3f92a152',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'AuthContext.tsx:157',message:'Processing authentication',data:{hasToken:!!token,hasTheme:!!theme,hasLanguage:!!language,hasCustomUrl:!!customUrl},timestamp:Date.now(),sessionId:'debug-session',runId:'auth-message-handler',hypothesisId:'auth-processing'})}).catch(()=>{});
+        // #endregion
+        
+        // Save all authentication data to sessionStorage
         sessionStorage.setItem(STORAGE_KEYS.IS_TOKEN_INHERIT, 'true');
         sessionStorage.removeItem(STORAGE_KEYS.IS_CREDENTIAL_LOGIN);
+        
+        // Save token and all auth data to sessionStorage
+        if (token) {
+          sessionStorage.setItem(STORAGE_KEYS.TOKEN, token);
+        }
+        if (accid) {
+          sessionStorage.setItem(STORAGE_KEYS.ACCID, accid);
+        }
+        if (apid) {
+          sessionStorage.setItem(STORAGE_KEYS.APID, apid);
+        }
+        if (employeeid) {
+          sessionStorage.setItem(STORAGE_KEYS.EMPLOYEE_ID, employeeid);
+        }
+        if (wpid) {
+          sessionStorage.setItem(STORAGE_KEYS.WPID, wpid);
+        }
 
         // Set theme and language using context functions (which also update localStorage)
-        if (theme) {
-          setTheme(theme as 'light' | 'dark' | 'system');
-        }
-        if (language) {
-          setLanguage(language as Language);
-        }
+        // Default to system theme if not provided
+        const themeToSet = theme || 'system';
+        setTheme(themeToSet as 'light' | 'dark' | 'system');
+        
+        // Default to English if not provided
+        const languageToSet = language || 'en';
+        setLanguage(languageToSet as Language);
 
         if (customUrl) {
           setApiUrl(customUrl);
+          // Save customUrl to sessionStorage for child apps
+          sessionStorage.setItem('paloma_customUrl', customUrl);
         }
 
         setIsTokenInheriting(true);
@@ -177,6 +205,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         setAuth((prev) => ({
           ...prev,
           token,
+          accid: accid || null,
+          apid: apid || null,
+          employeeid: employeeid || null,
+          wpid: wpid || null,
           isTokenInheriting: false,
           isAuthenticated: true,
           isCredentialLogin: false,
@@ -184,8 +216,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         setIsTokenInheriting(false);
         try {
           await fetchSessionData(token);
+          // #region agent log
+          fetch('http://127.0.0.1:7246/ingest/a3325ac2-7580-443c-83c2-0dde3f92a152',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'AuthContext.tsx:200',message:'Authentication successful, navigating to dashboard',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'auth-message-handler',hypothesisId:'auth-success'})}).catch(()=>{});
+          // #endregion
           navigate('/dashboard');
         } catch (error) {
+          // #region agent log
+          fetch('http://127.0.0.1:7246/ingest/a3325ac2-7580-443c-83c2-0dde3f92a152',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'AuthContext.tsx:204',message:'Authentication failed, navigating to login',data:{error:error instanceof Error ? error.message : 'Unknown error'},timestamp:Date.now(),sessionId:'debug-session',runId:'auth-message-handler',hypothesisId:'auth-failure'})}).catch(()=>{});
+          // #endregion
           setIsTokenInheriting(false);
           setAuth((prev) => ({ ...prev, isTokenInheriting: false }));
           navigate('/login');
