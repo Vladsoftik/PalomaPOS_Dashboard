@@ -34,7 +34,7 @@ export default function IframeContainer({ url, className = '' }: IframeContainer
   const prevBaseUrlRef = useRef<string | null>(null)
   // Track the src value separately - only update when we want to reload
   const [iframeSrc, setIframeSrc] = useState<string>(url)
-  const { token, accid, apid, employeeid, wpid, sessionData } = useAuth()
+  const { token, sessionData } = useAuth()
   const { theme, resolvedTheme } = useTheme()
   const { language } = useLanguage()
 

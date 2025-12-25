@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { LayoutDashboard, Clock, ShoppingBag, Brain, Gift, Globe, Zap } from 'lucide-react'
 import { App } from '../../types/app'
 
@@ -22,14 +22,15 @@ interface SidebarProps {
 const SIDEBAR_STORAGE_KEY = 'sidebar-collapsed'
 
 export default function Sidebar({ apps, activeAppId, onAppSelect }: SidebarProps) {
-  const [isCollapsed, setIsCollapsed] = useState(() => {
+  const [isCollapsed] = useState(() => {
     const saved = localStorage.getItem(SIDEBAR_STORAGE_KEY)
     return saved ? JSON.parse(saved) : false
   })
 
-  useEffect(() => {
-    localStorage.setItem(SIDEBAR_STORAGE_KEY, JSON.stringify(isCollapsed))
-  }, [isCollapsed])
+  // Note: setIsCollapsed and toggleCollapse are kept for future use when toggle is enabled
+  const toggleCollapse = () => {
+    // Toggle functionality will be implemented when needed
+  }
 
   const handleAppClick = (app: App) => {
     onAppSelect(app.id)

@@ -1,5 +1,5 @@
-import { useState, useEffect, useMemo } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useState, useMemo } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Maximize2, Minimize2 } from 'lucide-react'
 import Sidebar from '../components/layout/Sidebar'
 import IframeContainer from '../components/common/IframeContainer'
@@ -14,7 +14,6 @@ export default function Dashboard() {
   // #region agent log
   fetch('http://127.0.0.1:7246/ingest/a3325ac2-7580-443c-83c2-0dde3f92a152',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'Dashboard.tsx:10',message:'Dashboard component entry',data:{pathname:window.location.pathname},timestamp:Date.now(),sessionId:'debug-session',runId:'pre-fix',hypothesisId:'B'})}).catch(()=>{});
   // #endregion
-  const location = useLocation()
   const navigate = useNavigate()
   const [isMaximized, setIsMaximized] = useState(false)
   
