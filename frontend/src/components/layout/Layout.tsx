@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import Sidebar from './Sidebar'
+import Tabs from './Tabs'
 import IframeContainer from '../common/IframeContainer'
 import { apps, getDefaultApp, getAppById } from '../../config/apps'
 
@@ -15,8 +15,8 @@ export default function Layout() {
   const activeApp = getAppById(activeAppId) || getDefaultApp()
 
   return (
-    <div className="flex h-screen bg-gray-50 dark:bg-dark-bg overflow-hidden">
-      <Sidebar
+    <div className="flex flex-col h-screen bg-gray-50 dark:bg-dark-bg overflow-hidden">
+      <Tabs
         apps={apps}
         activeAppId={activeAppId}
         onAppSelect={handleAppSelect}

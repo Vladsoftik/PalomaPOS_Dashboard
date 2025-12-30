@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react'
 import { Maximize2, Minimize2 } from 'lucide-react'
-import Sidebar from '../components/layout/Sidebar'
+import Tabs from '../components/layout/Tabs'
 import IframeContainer from '../components/common/IframeContainer'
 import { apps, getDefaultApp, getAppById } from '../config/apps'
 
@@ -25,9 +25,9 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="flex h-screen bg-gray-50 dark:bg-dark-bg overflow-hidden">
+    <div className="flex flex-col h-screen bg-gray-50 dark:bg-dark-bg overflow-hidden">
       {!isMaximized && (
-        <Sidebar
+        <Tabs
           apps={apps}
           activeAppId={activeAppId}
           onAppSelect={handleAppSelect}
