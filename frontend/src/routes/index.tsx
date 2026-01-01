@@ -1,4 +1,4 @@
-import { createBrowserRouter } from 'react-router-dom'
+import { createBrowserRouter, Navigate } from 'react-router-dom'
 import Login from '../pages/Login'
 import Dashboard from '../pages/Dashboard'
 import ProtectedRoute from '../components/common/ProtectedRoute'
@@ -15,6 +15,16 @@ export const router = createBrowserRouter([
   },
   {
     path: '/',
+    element: (
+      <AppProviders>
+        <ProtectedRoute>
+          <Navigate to="/dashboard" replace />
+        </ProtectedRoute>
+      </AppProviders>
+    ),
+  },
+  {
+    path: '/:appId',
     element: (
       <AppProviders>
         <ProtectedRoute>

@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom'
 import { LayoutDashboard, Clock, ShoppingBag, Brain, Gift, Globe, Zap } from 'lucide-react'
 import { App } from '../../types/app'
 
@@ -15,12 +16,13 @@ const appIcons: Record<string, React.ComponentType<{ className?: string }>> = {
 interface TabsProps {
   apps: App[]
   activeAppId: string
-  onAppSelect: (appId: string) => void
 }
 
-export default function Tabs({ apps, activeAppId, onAppSelect }: TabsProps) {
+export default function Tabs({ apps, activeAppId }: TabsProps) {
+  const navigate = useNavigate()
+  
   const handleAppClick = (app: App) => {
-    onAppSelect(app.id)
+    navigate(`/${app.id}`)
   }
 
   return (
