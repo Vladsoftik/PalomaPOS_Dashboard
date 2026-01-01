@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom'
+import { useEffect, useRef } from 'react'
 import { LayoutDashboard, Clock, ShoppingBag, Brain, Gift, Globe, Zap } from 'lucide-react'
 import { App } from '../../types/app'
 
@@ -20,14 +21,104 @@ interface TabsProps {
 
 export default function Tabs({ apps, activeAppId }: TabsProps) {
   const navigate = useNavigate()
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
+  const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({})
+  const previousAppIdRef = useRef<string>(activeAppId)
+  const isNavigatingBackRef = useRef(false)
+  const isUserClickRef = useRef(false)
   
   const handleAppClick = (app: App) => {
+    // #region agent log
+    fetch('http://127.0.0.1:7258/ingest/26d926c3-15dd-4291-a31d-39b26ca983f5',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'Tabs.tsx:30',message:'Tab clicked - always forward navigation',data:{currentAppId:activeAppId,targetAppId:app.id},timestamp:Date.now(),sessionId:'debug-session',runId:'scroll-fix',hypothesisId:'click-handler'})}).catch(()=>{});
+    // #endregion
+    
+    // Clicking a tab is always forward navigation (scroll to left)
+    // Only browser back/forward buttons should trigger right-edge scroll
+    isUserClickRef.current = true
+    isNavigatingBackRef.current = false
+    previousAppIdRef.current = activeAppId
     navigate(`/${app.id}`)
   }
 
+  // Detect browser back/forward navigation via popstate
+  useEffect(() => {
+    const handlePopState = () => {
+      // #region agent log
+      fetch('http://127.0.0.1:7258/ingest/26d926c3-15dd-4291-a31d-39b26ca983f5',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'Tabs.tsx:42',message:'Browser popstate detected',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'scroll-fix',hypothesisId:'popstate'})}).catch(()=>{});
+      // #endregion
+      isUserClickRef.current = false
+      isNavigatingBackRef.current = true
+    }
+    
+    window.addEventListener('popstate', handlePopState)
+    return () => window.removeEventListener('popstate', handlePopState)
+  }, [])
+
+  // Update previous app ID when active app changes
+  useEffect(() => {
+    previousAppIdRef.current = activeAppId
+    // Reset user click flag after navigation completes
+    isUserClickRef.current = false
+  }, [activeAppId])
+
+  // Auto-scroll when active tab changes
+  useEffect(() => {
+    const scrollContainer = scrollContainerRef.current
+    const activeTab = tabRefs.current[activeAppId]
+    
+    if (!scrollContainer || !activeTab) return
+
+    // Small delay to ensure DOM is updated
+    const timeoutId = setTimeout(() => {
+      const isBack = isNavigatingBackRef.current
+      const isUserClick = isUserClickRef.current
+      const scrollWidth = scrollContainer.scrollWidth
+      const clientWidth = scrollContainer.clientWidth
+      const currentScrollLeft = scrollContainer.scrollLeft
+      
+      // #region agent log
+      fetch('http://127.0.0.1:7258/ingest/26d926c3-15dd-4291-a31d-39b26ca983f5',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'Tabs.tsx:64',message:'Scroll calculation',data:{activeAppId,isBack,isUserClick,scrollWidth,clientWidth,currentScrollLeft,scrollable:scrollWidth > clientWidth},timestamp:Date.now(),sessionId:'debug-session',runId:'scroll-fix',hypothesisId:'scroll-calculation'})}).catch(()=>{});
+      // #endregion
+      
+      // Only scroll to right edge if it's browser back navigation (not user click)
+      if (isBack && !isUserClick) {
+        // Scroll to right edge when going back via browser
+        const rightEdge = scrollWidth - clientWidth
+        // #region agent log
+        fetch('http://127.0.0.1:7258/ingest/26d926c3-15dd-4291-a31d-39b26ca983f5',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'Tabs.tsx:72',message:'Scrolling to right edge',data:{rightEdge,currentScrollLeft},timestamp:Date.now(),sessionId:'debug-session',runId:'scroll-fix',hypothesisId:'back-scroll'})}).catch(()=>{});
+        // #endregion
+        scrollContainer.scrollTo({
+          left: rightEdge,
+          behavior: 'smooth'
+        })
+        isNavigatingBackRef.current = false
+      } else {
+        // Scroll active tab to left side of visible area (for both user clicks and forward navigation)
+        const containerRect = scrollContainer.getBoundingClientRect()
+        const tabRect = activeTab.getBoundingClientRect()
+        const tabLeftRelativeToContainer = tabRect.left - containerRect.left + currentScrollLeft
+        
+        // #region agent log
+        fetch('http://127.0.0.1:7258/ingest/26d926c3-15dd-4291-a31d-39b26ca983f5',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'Tabs.tsx:80',message:'Scrolling tab to left',data:{tabLeftRelativeToContainer,currentScrollLeft,tabLeft:tabRect.left,containerLeft:containerRect.left},timestamp:Date.now(),sessionId:'debug-session',runId:'scroll-fix',hypothesisId:'forward-scroll'})}).catch(()=>{});
+        // #endregion
+        
+        scrollContainer.scrollTo({
+          left: tabLeftRelativeToContainer,
+          behavior: 'smooth'
+        })
+      }
+    }, 50)
+
+    return () => clearTimeout(timeoutId)
+  }, [activeAppId])
+
   return (
     <div className="bg-white dark:bg-dark-bg-secondary border-b border-gray-200 dark:border-gray-700">
-      <div className="flex overflow-x-auto">
+      <div 
+        ref={scrollContainerRef}
+        className="flex overflow-x-auto scroll-smooth"
+        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+      >
         {apps.map((app) => {
           const isActive = app.id === activeAppId
           const IconComponent = appIcons[app.id]
@@ -35,6 +126,9 @@ export default function Tabs({ apps, activeAppId }: TabsProps) {
           return (
             <button
               key={app.id}
+              ref={(el) => {
+                tabRefs.current[app.id] = el
+              }}
               onClick={() => handleAppClick(app)}
               className={`
                 px-5 py-3 text-sm
