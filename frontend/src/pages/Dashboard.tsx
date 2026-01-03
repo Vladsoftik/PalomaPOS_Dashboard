@@ -1,8 +1,8 @@
 import { useMemo } from 'react'
 import { useParams, Navigate } from 'react-router-dom'
-import Tabs from '../components/layout/Tabs'
+import Sidebar from '../components/layout/Sidebar'
 import IframeContainer from '../components/common/IframeContainer'
-import { apps, getDefaultApp, getAppById } from '../config/apps'
+import { apps, getAppById, getDefaultApp } from '@/config/apps'
 
 export default function Dashboard() {
   const { appId } = useParams<{ appId: string }>()
@@ -25,8 +25,8 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-gray-50 dark:bg-dark-bg overflow-hidden">
-      <Tabs
+    <div className="flex h-screen bg-gray-50 dark:bg-dark-bg overflow-hidden">
+      <Sidebar
         apps={apps}
         activeAppId={activeAppId}
       />
