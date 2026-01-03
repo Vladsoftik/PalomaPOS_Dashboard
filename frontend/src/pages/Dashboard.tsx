@@ -30,7 +30,7 @@ export default function Dashboard() {
         apps={apps}
         activeAppId={activeAppId}
       />
-      <main className="flex-1 overflow-hidden">
+      <main className="flex-1 overflow-hidden m-3 rounded-xl">
         <IframeContainer url={currentUrl} />
       </main>
     </div>

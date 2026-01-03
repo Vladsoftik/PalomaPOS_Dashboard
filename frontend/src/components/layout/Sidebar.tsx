@@ -14,7 +14,7 @@ export default function Sidebar({ apps, activeAppId }: SidebarProps) {
   }
 
   return (
-    <div className="h-full bg-white dark:bg-dark-bg-secondary border-r border-gray-200 dark:border-gray-800 flex flex-col w-20">
+    <div className="h-full bg-white dark:bg-dark-bg-secondary dark:border-gray-800 flex flex-col w-20">
       {/* App List */}
       <nav className="flex-1 flex flex-col items-center py-4 space-y-3 overflow-y-auto">
         {apps.map((app) => {
@@ -31,7 +31,7 @@ export default function Sidebar({ apps, activeAppId }: SidebarProps) {
               <div
                 className={`w-12 h-12 rounded-[10px] flex items-center justify-center transition-all ${
                   isActive
-                    ? 'bg-primary-500/80 shadow-md'
+                    ? 'bg-primary-500 shadow-md'
                     : 'bg-transparent group-hover:bg-gray-100 dark:group-hover:bg-gray-800'
                 }`}
               >
@@ -46,7 +46,7 @@ export default function Sidebar({ apps, activeAppId }: SidebarProps) {
                 )}
               </div>
               <span
-                className={`text-[10px] font-medium mt-1 ${
+                className={`text-[11px] font-medium mt-1 ${
                   isActive
                     ? 'text-primary-500 dark:text-primary-400'
                     : 'text-gray-600 dark:text-gray-400 opacity-70'
