@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { useEffect, useRef } from 'react'
-import { LayoutDashboard, Clock, ShoppingBag, Brain, Gift, Globe, Zap } from 'lucide-react'
+import { LayoutDashboard, Clock, ShoppingBag, Brain, Gift, Globe, Zap, DollarSign } from 'lucide-react'
 import { App } from '../../types/app'
 
 // Map app IDs to Lucide React icons
@@ -12,6 +12,7 @@ const appIcons: Record<string, React.ComponentType<{ className?: string }>> = {
   loyalty: Gift,
   'online-order': Globe,
   'instant-funding': Zap,
+  payroll: DollarSign,
 }
 
 interface TabsProps {

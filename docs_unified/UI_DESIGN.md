@@ -20,61 +20,546 @@ Applications should support two distinct UI themes:
 - Theme should persist across sessions
 - Theme switching should be instant without page reload
 
-## Dark Theme (Default)
+## Core Color System
 
-### Color Palette
+This section defines the complete color system using CSS variables (custom properties) that support both light and dark themes. All colors are defined using HSL values for better theme switching and consistency.
 
-The Dark theme uses a specific color palette for branding and visual consistency:
+### 1. Background Colors
+
+#### `--background` / `bg-background`
+
+**Purpose**: Main page background
+
+**Light Mode:**
+- HSL: `hsl(0 0% 100%)`
+- Hex: `#ffffff`
+- Usage: Main page background, body background
+
+**Dark Mode:**
+- HSL: `hsl(214 70% 8%)`
+- Hex: `#061222`
+- Usage: Main page background in dark mode
+
+**Where Used:**
+- `<body>` element
+- Main content areas
+- Page containers
+
+#### `--foreground` / `text-foreground`
+
+**Purpose**: Primary text color
+
+**Light Mode:**
+- HSL: `hsl(222.2 84% 4.9%)`
+- Hex: `#0a0f1a` (approximate)
+- Usage: Default text color, body text, headings (when not overridden)
+
+**Dark Mode:**
+- HSL: `hsl(0 0% 100%)`
+- Hex: `#ffffff`
+- Usage: Default text color, body text, headings
+
+**Where Used:**
+- Default text color
+- Body text
+- Headings (when not overridden)
+
+### 2. Card Colors
+
+#### `--card` / `bg-card`
+
+**Purpose**: Card, dialog, drawer, and header backgrounds
+
+**Light Mode:**
+- HSL: `hsl(0 0% 100%)`
+- Hex: `#ffffff`
+
+**Dark Mode:**
+- HSL: `hsl(213 64% 11%)`
+- Hex: `#0a1a2e` (dark-bg-secondary)
+
+**Where Used:**
+- Card components (Card, CardHeader, CardContent)
+- Dialog backgrounds
+- Drawer backgrounds
+- Header backgrounds (dark mode)
+- Popover backgrounds
+
+**Example:**
+```tsx
+<Card className="bg-card">...</Card>  // Or in dark mode: dark:bg-dark-bg-secondary
+```
+
+#### `--card-foreground` / `text-card-foreground`
+
+**Purpose**: Text color on card backgrounds
+
+**Light Mode:**
+- HSL: `hsl(222.2 84% 4.9%)`
+
+**Dark Mode:**
+- HSL: `hsl(0 0% 100%)`
+
+**Where Used:**
+- Text inside cards
+- Card titles and descriptions
+
+### 3. Primary Colors
+
+#### `--primary` / `bg-primary`, `text-primary`
+
+**Purpose**: Brand color (logo blue)
+
+**Both Modes:**
+- HSL: `hsl(201 100% 60%)`
+- Hex: `#34b7ff`
+
+**Where Used:**
+- Primary buttons
+- Active navigation items
+- Links
+- Brand elements
+- Focus rings
+- Sidebar active states
+
+**Example:**
+```tsx
+<Button className="bg-primary text-primary-foreground">Click</Button>
+```
+
+#### `--primary-foreground` / `text-primary-foreground`
+
+**Purpose**: Text color on primary backgrounds
+
+**Light Mode:**
+- HSL: `hsl(255 255 255)` (white)
+- Hex: `#ffffff`
+
+**Dark Mode:**
+- HSL: `hsl(214 70% 8%)`
+- Hex: `#061222`
+
+**Where Used:**
+- Text on primary buttons
+- Text on primary-colored backgrounds
+
+### 4. Secondary Colors
+
+#### `--secondary` / `bg-secondary`
+
+**Purpose**: Secondary UI elements
+
+**Light Mode:**
+- HSL: `hsl(210 40% 96.1%)`
+- Hex: `#f4f6f8` (approximate)
+
+**Dark Mode:**
+- HSL: `hsl(214 40% 15%)`
+- Hex: `#1f2937` (approximate)
+
+**Where Used:**
+- Secondary buttons
+- Secondary backgrounds
+- Less prominent UI elements
+
+#### `--secondary-foreground` / `text-secondary-foreground`
+
+**Purpose**: Text on secondary backgrounds
+
+**Light Mode:**
+- HSL: `hsl(222.2 47.4% 11.2%)`
+
+**Dark Mode:**
+- HSL: `hsl(0 0% 100%)`
+
+**Where Used:**
+- Text on secondary buttons
+- Text on secondary backgrounds
+
+### 5. Muted Colors
+
+#### `--muted` / `bg-muted`
+
+**Purpose**: Subtle backgrounds for less prominent elements
+
+**Light Mode:**
+- HSL: `hsl(210 40% 96.1%)`
+- Hex: `#f4f6f8` (approximate)
+
+**Dark Mode:**
+- HSL: `hsl(214 30% 18%)`
+- Hex: `#2a3441` (approximate)
+
+**Where Used:**
+- Table headers (bg-muted)
+- Subtle backgrounds
+- Hover states (hover:bg-muted/50)
+- Section backgrounds
+- Transaction card backgrounds
+
+**Example:**
+```tsx
+<div className="bg-muted/50">Subtle background</div>
+<thead className="bg-muted">Table header</thead>
+```
+
+#### `--muted-foreground` / `text-muted-foreground`
+
+**Purpose**: Less prominent text
+
+**Light Mode:**
+- HSL: `hsl(215.4 16.3% 46.9%)`
+- Hex: `#6b7280` (approximate)
+
+**Dark Mode:**
+- HSL: `hsl(0 0% 65%)`
+- Hex: `#a6a6a6` (approximate)
+
+**Where Used:**
+- Secondary text
+- Descriptions
+- Helper text
+- Placeholder-like text
+- Icons in less prominent contexts
+
+**Example:**
+```tsx
+<p className="text-muted-foreground">Helper text</p>
+<Info className="text-muted-foreground" />
+```
+
+### 6. Accent Colors
+
+#### `--accent` / `bg-accent`
+
+**Purpose**: Highlights and hover states
+
+**Light Mode:**
+- HSL: `hsl(210 40% 94%)`
+- Hex: `#eef2f6` (approximate)
+
+**Dark Mode:**
+- HSL: `hsl(214 35% 20%)`
+- Hex: `#374151` (approximate)
+
+**Where Used:**
+- Hover states (hover:bg-accent)
+- Ghost buttons
+- Outline button hover states
+- Interactive element highlights
+
+#### `--accent-foreground` / `text-accent-foreground`
+
+**Purpose**: Text on accent backgrounds
+
+**Light Mode:**
+- HSL: `hsl(222.2 47.4% 11.2%)`
+
+**Dark Mode:**
+- HSL: `hsl(0 0% 100%)`
+
+**Where Used:**
+- Text on hover states
+- Text on accent backgrounds
+
+### 7. Destructive Colors
+
+#### `--destructive` / `bg-destructive`
+
+**Purpose**: Error states, delete actions, warnings
+
+**Light Mode:**
+- HSL: `hsl(0 84.2% 60.2%)`
+- Hex: `#ef4444` (approximate)
+
+**Dark Mode:**
+- HSL: `hsl(0 84% 60%)`
+- Hex: `#ef4444` (approximate)
+
+**Where Used:**
+- Destructive buttons
+- Error messages
+- Delete actions
+- Warning indicators
+
+#### `--destructive-foreground` / `text-destructive-foreground`
+
+**Purpose**: Text on destructive backgrounds
+
+**Light Mode:**
+- HSL: `hsl(210 40% 98%)`
+
+**Dark Mode:**
+- HSL: `hsl(0 0% 100%)`
+
+**Where Used:**
+- Text on destructive buttons
+- Text on error backgrounds
+
+### 8. Border & Input Colors
+
+#### `--border` / `border-border`
+
+**Purpose**: Borders and dividers
+
+**Light Mode:**
+- HSL: `hsl(214.3 31.8% 91.4%)`
+- Hex: `#e5e7eb` (approximate)
+
+**Dark Mode:**
+- HSL: `hsl(214 30% 20%)`
+- Hex: `#374151` (approximate)
+
+**Where Used:**
+- Card borders (border-border)
+- Input borders
+- Table borders
+- Dividers
+- Sidebar borders
+
+**Example:**
+```tsx
+<div className="border border-border">...</div>
+```
+
+#### `--input` / `border-input`
+
+**Purpose**: Input field borders
+
+**Light Mode:**
+- HSL: `hsl(214.3 31.8% 91.4%)`
+
+**Dark Mode:**
+- HSL: `hsl(214 30% 20%)`
+
+**Where Used:**
+- Input fields
+- Textarea borders
+- Select borders
+
+#### `--ring` / `ring-ring`
+
+**Purpose**: Focus ring color
+
+**Both Modes:**
+- HSL: `hsl(201 100% 60%)`
+- Hex: `#34b7ff`
+
+**Where Used:**
+- Focus states (focus-visible:ring-ring)
+- Input focus rings
+- Button focus rings
+
+### 9. Popover Colors
+
+#### `--popover` / `bg-popover`
+
+**Purpose**: Popover and dropdown backgrounds
+
+**Light Mode:**
+- HSL: `hsl(0 0% 100%)`
+- Hex: `#ffffff`
+
+**Dark Mode:**
+- HSL: `hsl(213 64% 11%)`
+- Hex: `#0a1a2e`
+
+**Where Used:**
+- Popover components
+- Dropdown menus
+- Tooltip backgrounds
+- Chart tooltips
+
+#### `--popover-foreground` / `text-popover-foreground`
+
+**Purpose**: Text in popovers
+
+**Light Mode:**
+- HSL: `hsl(222.2 84% 4.9%)`
+
+**Dark Mode:**
+- HSL: `hsl(0 0% 100%)`
+
+**Where Used:**
+- Text inside popovers
+- Dropdown menu text
+
+### 10. Sidebar Colors
+
+#### `--sidebar-background` / `bg-sidebar`
+
+**Purpose**: Sidebar background
+
+**Light Mode:**
+- HSL: `hsl(0 0% 100%)`
+- Hex: `#ffffff`
+
+**Dark Mode:**
+- HSL: `hsl(213 64% 11%)`
+- Hex: `#0a1a2e`
+
+**Where Used:**
+- Sidebar component (`<aside>`)
+- Navigation sidebar
+
+**Example:**
+```tsx
+<aside className="bg-sidebar border-r border-sidebar-border">...</aside>
+```
+
+#### `--sidebar-foreground` / `text-sidebar-foreground`
+
+**Purpose**: Text in sidebar
+
+**Light Mode:**
+- HSL: `hsl(222.2 47.4% 11.2%)`
+
+**Dark Mode:**
+- HSL: `hsl(0 0% 100%)`
+
+**Where Used:**
+- Sidebar navigation text
+- Sidebar titles
+- Sidebar icons
+
+#### `--sidebar-primary` / `bg-sidebar-primary`, `text-sidebar-primary`
+
+**Purpose**: Active state in sidebar
+
+**Both Modes:**
+- HSL: `hsl(201 100% 60%)`
+- Hex: `#34b7ff`
+
+**Where Used:**
+- Active navigation items
+- Selected sidebar items
+
+#### `--sidebar-accent` / `bg-sidebar-accent`
+
+**Purpose**: Hover states in sidebar
+
+**Light Mode:**
+- HSL: `hsl(201 100% 95%)`
+- Hex: `#e6f7ff` (approximate)
+
+**Dark Mode:**
+- HSL: `hsl(201 100% 15%)`
+- Hex: `#0d1a26` (approximate)
+
+**Where Used:**
+- Sidebar item hover states
+- Sidebar item highlights
+
+#### `--sidebar-border` / `border-sidebar-border`
+
+**Purpose**: Sidebar borders
+
+**Light Mode:**
+- HSL: `hsl(220 13% 91%)`
+- Hex: `#e5e7eb` (approximate)
+
+**Dark Mode:**
+- HSL: `hsl(214 30% 20%)`
+- Hex: `#374151` (approximate)
+
+**Where Used:**
+- Sidebar right border
+- Sidebar dividers
+
+#### `--sidebar-ring` / `ring-sidebar-ring`
+
+**Purpose**: Focus ring in sidebar
+
+**Both Modes:**
+- HSL: `hsl(201 100% 60%)`
+- Hex: `#34b7ff`
+
+**Where Used:**
+- Sidebar item focus states
+
+### Additional Color Palette
 
 #### Logo Colors
 
-The logo in Dark theme may **only** use the following colors:
+- **logo-blue**: `#34b7ff` (same as primary)
+- **logo-white**: `#ffffff`
 
-- **Blue**: `#34b7ff` - Primary brand color for logo elements
-- **White**: `#ffffff` - Secondary logo color for text or highlights
-- **Dark Blue Background**: `#061222` - Background color for dark theme
+#### Dark Theme Specific Colors (Tailwind Config)
 
-#### Dark Theme Color Specifications
+- **dark-bg**: `#061222` (main dark background)
+- **dark-bg-secondary**: `#0a1a2e` (cards, dialogs, sidebars)
 
-| Element | Color | Hex Code | Usage |
-|---------|-------|----------|-------|
-| Background | Dark Blue | `#061222` | Primary background color |
-| Logo Primary | Blue | `#34b7ff` | Logo main color |
-| Logo Secondary | White | `#ffffff` | Logo text/highlights |
-| Text Primary | White/Light | `#ffffff` or light gray | Primary text color |
-| Text Secondary | Light Gray | `#9ca3af` or similar | Secondary text color |
-| Accent | Blue | `#34b7ff` | Buttons, links, highlights |
+#### Indigo Palette
 
-### Dark Theme Requirements
+Indigo palette (indigo-50 through indigo-950) is available but not primary.
 
-1. **Default Theme**: Dark theme is the default theme for the application
-2. **Logo Restrictions**: Logo colors are restricted to blue (`#34b7ff`), white (`#ffffff`), and dark blue background (`#061222`)
-3. **Background**: Primary background uses dark blue (`#061222`)
-4. **Contrast**: All text and UI elements must meet WCAG accessibility contrast requirements
-5. **Consistency**: All components must support dark theme styling
+### Usage Patterns
 
-## Light Theme
+#### Common Patterns
 
-### Color Palette
+**Cards:**
+```tsx
+<Card className="bg-card border border-border">
+  <CardHeader>
+    <CardTitle className="text-card-foreground">Title</CardTitle>
+  </CardHeader>
+</Card>
+```
 
-The Light theme uses a standard light color palette:
+**Buttons:**
+```tsx
+<Button className="bg-primary text-primary-foreground">Primary</Button>
+<Button variant="secondary" className="bg-secondary text-secondary-foreground">Secondary</Button>
+<Button variant="ghost" className="hover:bg-accent hover:text-accent-foreground">Ghost</Button>
+```
 
-#### Light Theme Color Specifications
+**Sidebar:**
+```tsx
+<aside className="bg-sidebar border-r border-sidebar-border">
+  <nav className="text-sidebar-foreground">...</nav>
+</aside>
+```
 
-| Element | Color | Usage |
-|---------|-------|-------|
-| Background | White/Light Gray | Primary background color |
-| Text Primary | Dark Gray/Black | Primary text color |
-| Text Secondary | Medium Gray | Secondary text color |
-| Accent | Primary Blue | Buttons, links, highlights |
-| Borders | Light Gray | Borders and dividers |
+**Tables:**
+```tsx
+<thead className="bg-muted">
+  <tr className="border-b border-border">...</tr>
+</thead>
+```
 
-### Light Theme Requirements
+**Text Hierarchy:**
+```tsx
+<h1 className="text-foreground">Main Heading</h1>
+<p className="text-muted-foreground">Secondary text</p>
+```
 
-1. **Theme Option**: Light theme is available as an alternative to dark theme
-2. **Accessibility**: All text and UI elements must meet WCAG accessibility contrast requirements
-3. **Consistency**: All components must support light theme styling
-4. **Logo**: Logo should adapt appropriately for light theme (may use different colors than dark theme)
+### Implementation Guide for Another App
+
+#### Step 1: Add CSS Variables
+
+Copy the `:root` and `.dark` sections from `src/index.css` to your CSS file.
+
+#### Step 2: Configure Tailwind
+
+Add the color configuration from `tailwind.config.ts` to your Tailwind config.
+
+#### Step 3: Use Classes
+
+Use Tailwind classes like `bg-background`, `bg-card`, `text-foreground`, `text-muted-foreground`, etc.
+
+#### Step 4: Theme Toggle
+
+Implement a theme toggle that adds/removes the `dark` class on the root element.
+
+### Color Conversion Reference
+
+To convert HSL to RGB/Hex:
+
+- HSL format: `hsl(214 70% 8%)` (space-separated, no commas)
+- Use online converters or CSS `hsl()` function
+- Example: `hsl(214, 70%, 8%)` = `rgb(6, 18, 34)` = `#061222`
+
+**Note**: This palette supports light and dark modes with consistent brand colors.
 
 ## Layout Patterns
 

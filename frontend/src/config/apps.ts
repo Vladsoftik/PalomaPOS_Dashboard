@@ -12,6 +12,11 @@ export const apps: App[] = [
     url: 'https://timeclock.apps.palomapos.com/',
   },
   {
+    id: 'payroll',
+    label: 'Payroll',
+    url: 'https://payroll.apps.palomapos.com/',
+  },
+  {
     id: 'orders',
     label: 'UberEats,Doordash,Groobhub',
     url: 'https://order.out.apps.palomapos.com/',
