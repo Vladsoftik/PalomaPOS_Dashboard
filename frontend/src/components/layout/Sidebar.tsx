@@ -29,9 +29,9 @@ export default function Sidebar({ apps, activeAppId }: SidebarProps) {
               aria-label={app.label}
             >
               <div
-                className={`w-12 h-12 rounded-[10px] flex items-center justify-center transition-all ${
+                className={`rounded-[10px] p-3 flex items-center justify-center transition-all ${
                   isActive
-                    ? 'bg-primary-500 shadow-md'
+                    ? 'bg-primary-500'
                     : 'bg-transparent group-hover:bg-gray-100 dark:group-hover:bg-gray-800'
                 }`}
               >

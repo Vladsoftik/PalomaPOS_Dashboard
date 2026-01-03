@@ -314,7 +314,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         'https://posapi.palomapos.com/api/v1.9',
       );
 
-      toast.success('Successfully logged in');
       await fetchSessionData(data.token);
       return true;
     } catch (error) {
