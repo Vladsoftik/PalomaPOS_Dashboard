@@ -1,5 +1,5 @@
 import { App } from '../types/app';
-import { Brain, Clock, Gift, Globe, HandCoins, Home, ShoppingBag, Zap } from 'lucide-react';
+import { Brain, Clock, FileText, Gift, Globe, HandCoins, Home, ShoppingBag, Zap } from 'lucide-react';
 
 export const apps: App[] = [
   {
@@ -19,6 +19,12 @@ export const apps: App[] = [
     label: 'Payroll',
     icon: HandCoins,
     url: 'https://payroll.apps.palomapos.com/',
+  },
+  {
+    id: 'log-operations',
+    label: 'Log Operations',
+    icon: FileText,
+    url: 'https://logs.apps.palomapos.com/',
   },
   {
     id: 'orders',
