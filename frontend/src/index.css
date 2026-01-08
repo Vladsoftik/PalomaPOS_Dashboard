@@ -23,3 +23,24 @@ body {
   display: none;
 }
 
+/* Hide all scrollbars while maintaining scroll functionality */
+/* Webkit browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+::-webkit-scrollbar-track {
+  display: none;
+}
+
+::-webkit-scrollbar-thumb {
+  display: none;
+}
+
+/* Firefox scrollbar styling */
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
