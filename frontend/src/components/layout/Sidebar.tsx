@@ -10,9 +10,32 @@ interface SidebarProps {
 
 export default function Sidebar({ apps, activeAppId }: SidebarProps) {
   const navigate = useNavigate()
-  const { logout } = useAuth()
+  const { logout, validateToken } = useAuth()
 
-  const handleAppClick = (app: App) => {
+  const handleAppClick = async (app: App) => {
+    // #region agent log
+    fetch('http://127.0.0.1:7258/ingest/26d926c3-15dd-4291-a31d-39b26ca983f5',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'Sidebar.tsx:handleAppClick:entry',message:'App click handler started',data:{appId:app.id,activeAppId},timestamp:Date.now(),sessionId:'debug-session',runId:'app-switch',hypothesisId:'app-click-start'})}).catch(()=>{});
+    // #endregion
+
+    // Validate token before switching apps
+    const isValid = await validateToken()
+    
+    // #region agent log
+    fetch('http://127.0.0.1:7258/ingest/26d926c3-15dd-4291-a31d-39b26ca983f5',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'Sidebar.tsx:handleAppClick:after-validation',message:'Token validation result',data:{isValid,appId:app.id},timestamp:Date.now(),sessionId:'debug-session',runId:'app-switch',hypothesisId:'validation-result'})}).catch(()=>{});
+    // #endregion
+
+    if (!isValid) {
+      // #region agent log
+      fetch('http://127.0.0.1:7258/ingest/26d926c3-15dd-4291-a31d-39b26ca983f5',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'Sidebar.tsx:handleAppClick:invalid-token',message:'Token invalid, navigation prevented',data:{appId:app.id},timestamp:Date.now(),sessionId:'debug-session',runId:'app-switch',hypothesisId:'navigation-prevented'})}).catch(()=>{});
+      // #endregion
+      // Token validation failed, user will be redirected to login by handleTokenError
+      return
+    }
+
+    // #region agent log
+    fetch('http://127.0.0.1:7258/ingest/26d926c3-15dd-4291-a31d-39b26ca983f5',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'Sidebar.tsx:handleAppClick:navigation',message:'Navigating to app',data:{appId:app.id},timestamp:Date.now(),sessionId:'debug-session',runId:'app-switch',hypothesisId:'navigation-success'})}).catch(()=>{});
+    // #endregion
+
     navigate(`/${app.id}`)
   }
 

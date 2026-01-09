@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   setApiUrl,
   palomaURL,
+  getApiUrl,
 } from '../services/apiConfigService';
 import { useTheme } from './ThemeContext';
 import { useLanguage, Language } from './LanguageContext';
@@ -36,6 +37,7 @@ interface AuthContextType extends AuthState {
   logout: () => void;
   sessionData: SessionData | null;
   handleTokenError: () => void;
+  validateToken: () => Promise<boolean>;
   isTokenInheriting: boolean;
   isCredentialLogin: boolean;
 }
@@ -151,15 +153,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     }
 
     const handler = async (event: MessageEvent) => {
-      // #region agent log
-      fetch('http://127.0.0.1:7246/ingest/a3325ac2-7580-443c-83c2-0dde3f92a152',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'AuthContext.tsx:153',message:'Message handler received',data:{type:event.data?.type,hasToken:!!event.data?.token},timestamp:Date.now(),sessionId:'debug-session',runId:'auth-message-handler',hypothesisId:'message-received'})}).catch(()=>{});
-      // #endregion
+
       const { type, token, customUrl, theme, language, accid, apid, employeeid, wpid } = event.data || {};
       console.log('event.data', event.data);
       if (type === 'authentication' && token) {
-        // #region agent log
-        fetch('http://127.0.0.1:7246/ingest/a3325ac2-7580-443c-83c2-0dde3f92a152',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'AuthContext.tsx:157',message:'Processing authentication',data:{hasToken:!!token,hasTheme:!!theme,hasLanguage:!!language,hasCustomUrl:!!customUrl},timestamp:Date.now(),sessionId:'debug-session',runId:'auth-message-handler',hypothesisId:'auth-processing'})}).catch(()=>{});
-        // #endregion
+
         
         // Save all authentication data to sessionStorage
         sessionStorage.setItem(STORAGE_KEYS.IS_TOKEN_INHERIT, 'true');
@@ -216,14 +214,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         setIsTokenInheriting(false);
         try {
           await fetchSessionData(token);
-          // #region agent log
-          fetch('http://127.0.0.1:7246/ingest/a3325ac2-7580-443c-83c2-0dde3f92a152',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'AuthContext.tsx:200',message:'Authentication successful, navigating to dashboard',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'auth-message-handler',hypothesisId:'auth-success'})}).catch(()=>{});
-          // #endregion
           navigate('/dashboard');
         } catch (error) {
-          // #region agent log
-          fetch('http://127.0.0.1:7246/ingest/a3325ac2-7580-443c-83c2-0dde3f92a152',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'AuthContext.tsx:204',message:'Authentication failed, navigating to login',data:{error:error instanceof Error ? error.message : 'Unknown error'},timestamp:Date.now(),sessionId:'debug-session',runId:'auth-message-handler',hypothesisId:'auth-failure'})}).catch(()=>{});
-          // #endregion
           setIsTokenInheriting(false);
           setAuth((prev) => ({ ...prev, isTokenInheriting: false }));
           navigate('/login');
@@ -377,12 +369,53 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     }
   }
 
+  const validateToken = async (): Promise<boolean> => {
+    const token = auth.token || sessionStorage.getItem(STORAGE_KEYS.TOKEN);
+    
+    if (!token) {
+      handleTokenError();
+      return false;
+    }
+
+    const customUrl = sessionStorage.getItem('paloma_customUrl') || getApiUrl() || palomaURL;
+    
+    try {
+      const response = await fetch(`${customUrl}/account/info`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          accept: '*/*',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        handleTokenError();
+        return false;
+      }
+
+      const data = await response.json();
+
+      if (data?.error || data?.message === 'Token is invalid' || (data?.error === '102')) {
+        handleTokenError();
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Token validation error:', error);
+      handleTokenError();
+      return false;
+    }
+  };
+
   const contextValue: AuthContextType = {
     ...auth,
     login,
     logout,
     sessionData,
     handleTokenError,
+    validateToken,
     isTokenInheriting,
   };
 
