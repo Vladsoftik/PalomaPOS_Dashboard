@@ -38,21 +38,6 @@ export default function IframeContainer({ url, className = '' }: IframeContainer
   const { theme, resolvedTheme } = useTheme()
   const { language } = useLanguage()
 
-  // #region agent log
-  useEffect(() => {
-    fetch('http://127.0.0.1:7246/ingest/a3325ac2-7580-443c-83c2-0dde3f92a152',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'IframeContainer.tsx:36',message:'Component mounted',data:{url,iframeSrc},timestamp:Date.now(),sessionId:'debug-session',runId:'prevent-reload-fix',hypothesisId:'component-lifecycle'})}).catch(()=>{});
-    return () => {
-      fetch('http://127.0.0.1:7246/ingest/a3325ac2-7580-443c-83c2-0dde3f92a152',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'IframeContainer.tsx:39',message:'Component unmounted',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'prevent-reload-fix',hypothesisId:'component-lifecycle'})}).catch(()=>{});
-    };
-  }, []);
-  // #endregion
-
-  // Track iframeSrc changes
-  // #region agent log
-  useEffect(() => {
-    fetch('http://127.0.0.1:7246/ingest/a3325ac2-7580-443c-83c2-0dde3f92a152',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'IframeContainer.tsx:47',message:'iframeSrc state changed',data:{iframeSrc,url},timestamp:Date.now(),sessionId:'debug-session',runId:'prevent-reload-fix',hypothesisId:'state-change'})}).catch(()=>{});
-  }, [iframeSrc]);
-  // #endregion
 
   // Handle URL changes - use postMessage for route changes, update src for app changes
   useEffect(() => {
@@ -61,15 +46,8 @@ export default function IframeContainer({ url, className = '' }: IframeContainer
     const currentBaseUrl = getBaseUrl(url)
     const currentPath = getPathFromUrl(url)
 
-    // #region agent log
-    fetch('http://127.0.0.1:7246/ingest/a3325ac2-7580-443c-83c2-0dde3f92a152',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'IframeContainer.tsx:48',message:'URL change detected',data:{url,currentBaseUrl,currentPath,prevBaseUrl:prevBaseUrlRef.current,prevUrl:prevUrlRef.current},timestamp:Date.now(),sessionId:'debug-session',runId:'prevent-reload',hypothesisId:'route-change'})}).catch(()=>{});
-    // #endregion
-
     // If base URL changed (different app), update src to reload iframe
     if (prevBaseUrlRef.current !== null && prevBaseUrlRef.current !== currentBaseUrl) {
-      // #region agent log
-      fetch('http://127.0.0.1:7246/ingest/a3325ac2-7580-443c-83c2-0dde3f92a152',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'IframeContainer.tsx:54',message:'Base URL changed - updating src',data:{newBaseUrl:currentBaseUrl,oldBaseUrl:prevBaseUrlRef.current},timestamp:Date.now(),sessionId:'debug-session',runId:'prevent-reload-fix',hypothesisId:'app-change'})}).catch(()=>{});
-      // #endregion
       setIframeSrc(url) // Update state to trigger src change
       prevBaseUrlRef.current = currentBaseUrl
       prevUrlRef.current = url
@@ -80,9 +58,6 @@ export default function IframeContainer({ url, className = '' }: IframeContainer
     if (prevUrlRef.current !== null && prevUrlRef.current !== url && prevBaseUrlRef.current === currentBaseUrl) {
       const iframeWindow = iframeRef.current.contentWindow
       if (iframeWindow) {
-        // #region agent log
-        fetch('http://127.0.0.1:7246/ingest/a3325ac2-7580-443c-83c2-0dde3f92a152',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'IframeContainer.tsx:65',message:'Sending route-change postMessage',data:{path:currentPath,fullUrl:url},timestamp:Date.now(),sessionId:'debug-session',runId:'prevent-reload-fix',hypothesisId:'route-change'})}).catch(()=>{});
-        // #endregion
         iframeWindow.postMessage(
           {
             type: 'route-change',
@@ -95,9 +70,6 @@ export default function IframeContainer({ url, className = '' }: IframeContainer
       prevUrlRef.current = url
     } else if (prevUrlRef.current === null) {
       // Initial load - set src
-      // #region agent log
-      fetch('http://127.0.0.1:7246/ingest/a3325ac2-7580-443c-83c2-0dde3f92a152',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'IframeContainer.tsx:78',message:'Initial load - setting src',data:{url},timestamp:Date.now(),sessionId:'debug-session',runId:'prevent-reload-fix',hypothesisId:'initial-load'})}).catch(()=>{});
-      // #endregion
       setIframeSrc(url) // Set initial src
       prevBaseUrlRef.current = currentBaseUrl
       prevUrlRef.current = url
@@ -105,9 +77,6 @@ export default function IframeContainer({ url, className = '' }: IframeContainer
   }, [url])
 
   const handleLoad = () => {
-    // #region agent log
-    fetch('http://127.0.0.1:7246/ingest/a3325ac2-7580-443c-83c2-0dde3f92a152',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'IframeContainer.tsx:103',message:'Iframe onLoad event fired',data:{iframeSrc,currentSrc:iframeRef.current?.src,hasToken:!!token,theme,resolvedTheme,language},timestamp:Date.now(),sessionId:'debug-session',runId:'auth-message-handler',hypothesisId:'iframe-reload'})}).catch(()=>{});
-    // #endregion
     // Send authentication token and all data to iframe when it loads
     if (iframeRef.current && token) {
       const iframe = iframeRef.current
@@ -127,10 +96,6 @@ export default function IframeContainer({ url, className = '' }: IframeContainer
         }
         
         // Send token, auth data, theme, and language to the iframe
-        // #region agent log
-        fetch('http://127.0.0.1:7246/ingest/a3325ac2-7580-443c-83c2-0dde3f92a152',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'IframeContainer.tsx:120',message:'Sending authentication data to iframe',data:{hasToken:!!sessionDataToSend.token,theme,resolvedTheme,language,hasCustomUrl:!!sessionDataToSend.customUrl},timestamp:Date.now(),sessionId:'debug-session',runId:'auth-message-handler',hypothesisId:'post-message-send'})}).catch(()=>{});
-        // #endregion
-        
         iframeWindow.postMessage(
           {
             type: 'authentication',
@@ -152,10 +117,6 @@ export default function IframeContainer({ url, className = '' }: IframeContainer
       const iframeWindow = iframe.contentWindow
       
       if (iframeWindow) {
-        // #region agent log
-        fetch('http://127.0.0.1:7246/ingest/a3325ac2-7580-443c-83c2-0dde3f92a152',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'IframeContainer.tsx:140',message:'Theme or language changed, sending update',data:{theme,resolvedTheme,language},timestamp:Date.now(),sessionId:'debug-session',runId:'auth-message-handler',hypothesisId:'theme-language-update'})}).catch(()=>{});
-        // #endregion
-        
         iframeWindow.postMessage(
           {
             type: 'theme-language-update',
@@ -168,6 +129,34 @@ export default function IframeContainer({ url, className = '' }: IframeContainer
     }
   }, [theme, resolvedTheme, language, token])
 
+  // Handle download requests from iframe
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      // Handle download requests from child app
+      if (event.data?.type === 'download') {
+        const downloadUrl = event.data.url
+        const filename = event.data.filename
+
+        if (downloadUrl) {
+          // Create a temporary anchor element to trigger download
+          const link = document.createElement('a')
+          link.href = downloadUrl
+          link.download = filename || ''
+          link.target = '_blank'
+          link.rel = 'noopener noreferrer'
+          document.body.appendChild(link)
+          link.click()
+          document.body.removeChild(link)
+        }
+      }
+    }
+
+    window.addEventListener('message', handleMessage)
+    return () => {
+      window.removeEventListener('message', handleMessage)
+    }
+  }, [])
+
   return (
     <div className={`relative w-full h-full ${className}`}>
       <iframe
@@ -175,7 +164,7 @@ export default function IframeContainer({ url, className = '' }: IframeContainer
         src={iframeSrc}
         className="w-full h-full border-0"
         onLoad={handleLoad}
-        sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-top-navigation"
+        sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-top-navigation allow-downloads"
         title="Application Frame"
       />
     </div>

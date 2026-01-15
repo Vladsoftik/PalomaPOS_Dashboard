@@ -29,10 +29,6 @@ export default function Tabs({ apps, activeAppId }: TabsProps) {
   const isUserClickRef = useRef(false)
   
   const handleAppClick = (app: App) => {
-    // #region agent log
-    fetch('http://127.0.0.1:7258/ingest/26d926c3-15dd-4291-a31d-39b26ca983f5',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'Tabs.tsx:30',message:'Tab clicked - always forward navigation',data:{currentAppId:activeAppId,targetAppId:app.id},timestamp:Date.now(),sessionId:'debug-session',runId:'scroll-fix',hypothesisId:'click-handler'})}).catch(()=>{});
-    // #endregion
-    
     // Clicking a tab is always forward navigation (scroll to left)
     // Only browser back/forward buttons should trigger right-edge scroll
     isUserClickRef.current = true
@@ -44,9 +40,6 @@ export default function Tabs({ apps, activeAppId }: TabsProps) {
   // Detect browser back/forward navigation via popstate
   useEffect(() => {
     const handlePopState = () => {
-      // #region agent log
-      fetch('http://127.0.0.1:7258/ingest/26d926c3-15dd-4291-a31d-39b26ca983f5',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'Tabs.tsx:42',message:'Browser popstate detected',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'scroll-fix',hypothesisId:'popstate'})}).catch(()=>{});
-      // #endregion
       isUserClickRef.current = false
       isNavigatingBackRef.current = true
     }
@@ -77,17 +70,10 @@ export default function Tabs({ apps, activeAppId }: TabsProps) {
       const clientWidth = scrollContainer.clientWidth
       const currentScrollLeft = scrollContainer.scrollLeft
       
-      // #region agent log
-      fetch('http://127.0.0.1:7258/ingest/26d926c3-15dd-4291-a31d-39b26ca983f5',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'Tabs.tsx:64',message:'Scroll calculation',data:{activeAppId,isBack,isUserClick,scrollWidth,clientWidth,currentScrollLeft,scrollable:scrollWidth > clientWidth},timestamp:Date.now(),sessionId:'debug-session',runId:'scroll-fix',hypothesisId:'scroll-calculation'})}).catch(()=>{});
-      // #endregion
-      
       // Only scroll to right edge if it's browser back navigation (not user click)
       if (isBack && !isUserClick) {
         // Scroll to right edge when going back via browser
         const rightEdge = scrollWidth - clientWidth
-        // #region agent log
-        fetch('http://127.0.0.1:7258/ingest/26d926c3-15dd-4291-a31d-39b26ca983f5',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'Tabs.tsx:72',message:'Scrolling to right edge',data:{rightEdge,currentScrollLeft},timestamp:Date.now(),sessionId:'debug-session',runId:'scroll-fix',hypothesisId:'back-scroll'})}).catch(()=>{});
-        // #endregion
         scrollContainer.scrollTo({
           left: rightEdge,
           behavior: 'smooth'
@@ -98,10 +84,6 @@ export default function Tabs({ apps, activeAppId }: TabsProps) {
         const containerRect = scrollContainer.getBoundingClientRect()
         const tabRect = activeTab.getBoundingClientRect()
         const tabLeftRelativeToContainer = tabRect.left - containerRect.left + currentScrollLeft
-        
-        // #region agent log
-        fetch('http://127.0.0.1:7258/ingest/26d926c3-15dd-4291-a31d-39b26ca983f5',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'Tabs.tsx:80',message:'Scrolling tab to left',data:{tabLeftRelativeToContainer,currentScrollLeft,tabLeft:tabRect.left,containerLeft:containerRect.left},timestamp:Date.now(),sessionId:'debug-session',runId:'scroll-fix',hypothesisId:'forward-scroll'})}).catch(()=>{});
-        // #endregion
         
         scrollContainer.scrollTo({
           left: tabLeftRelativeToContainer,
